@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.wanx-reader"
+    namespace = "com.wanx.reader"
     compileSdk = 35
 
     defaultConfig {
