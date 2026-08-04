@@ -21,5 +21,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "wanx-reader"
+rootProject.name = "Wanx-Reader"
 include(":app")
