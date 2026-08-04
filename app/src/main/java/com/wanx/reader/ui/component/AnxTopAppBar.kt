@@ -3,6 +3,7 @@ package com.wanx.reader.ui.component
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -15,8 +16,9 @@ import androidx.compose.ui.unit.dp
 
 /**
  * Anx 风格顶部导航栏
- * 设计：纯色背景（或透明），居左标题，56dp 高度，无分割线
+ * 设计：纯色/透明背景，居左标题，56dp 高度
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnxTopAppBar(
     title: String,
@@ -43,7 +45,6 @@ fun AnxTopAppBar(
         ),
         actions = {
             actions?.invoke()
-            /* 右侧留白 8dp，保持视觉呼吸感 */
             androidx.compose.foundation.layout.Spacer(
                 modifier = Modifier.padding(end = 8.dp)
             )
