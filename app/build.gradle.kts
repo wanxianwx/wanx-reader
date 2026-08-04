@@ -11,7 +11,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.wanx-reader"
+        applicationId = "com.wanx.reader"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
