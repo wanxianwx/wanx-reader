@@ -1,5 +1,6 @@
 package com.wanx.reader.ui.bookshelf
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -135,6 +136,7 @@ fun BookshelfScreen(
  * - 圆角 4dp（legado 风格）
  * - 书名居中，最多 2 行
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun BookGridCard(
     book: BookItem,
