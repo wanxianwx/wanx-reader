@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -44,19 +45,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-/**
- * 应用根组件
- *
- * 结构：
- *   AnxTheme(themeMode)
- *   └─ Scaffold(
- *        topBar    = AnxTopAppBar
- *        bottomBar = AnxBottomBar（3 Tab）
- *        content   = AnxNavGraph（NavHost）
- *      )
- *
- * 零 XML 引用，零 Fragment。
- */
 @Composable
 private fun WanxApp() {
     val themeViewModel: ThemeViewModel = hiltViewModel()
@@ -65,76 +53,72 @@ private fun WanxApp() {
     val updateViewModel: UpdateViewModel = hiltViewModel()
     val showUpdateDialog by updateViewModel.showUpdateDialog.collectAsStateWithLifecycle()
     val releaseUrl by updateViewModel.releaseUrl.collectAsStateWithLifecycle()
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
 
     AnxTheme(themeMode = themeMode) {
-        /* 全局呼吸感渐变背景 — 包裹所有 Scaffold 和 NavHost */
         AnxGradientBackground {
             val navController = rememberNavController()
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route ?: Screen.Bookshelf.route
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route ?: Screen.Bookshelf.route
 
-        val navItems = remember {
-            listOf(
-                AnxBottomNavItem("书架", Icons.Outlined.LibraryBooks, Screen.Bookshelf.route),
-                AnxBottomNavItem("发现", Icons.Outlined.Explore, Screen.Explore.route),
-                AnxBottomNavItem("我的", Icons.Outlined.Person, Screen.Profile.route),
-            )
-        }
+            val navItems = remember {
+                listOf(
+                    AnxBottomNavItem("书架", Icons.Outlined.LibraryBooks, Screen.Bookshelf.route),
+                    AnxBottomNavItem("发现", Icons.Outlined.Explore, Screen.Explore.route),
+                    AnxBottomNavItem("我的", Icons.Outlined.Person, Screen.Profile.route),
+                )
+            }
 
-        val currentTitle = remember(currentRoute) {
-            allScreens.find { it.route == currentRoute }?.label ?: "Wanx Reader"
-        }
+            val currentTitle = remember(currentRoute) {
+                allScreens.find { it.route == currentRoute }?.label ?: "Wanx Reader"
+            }
 
-        /* 阅读器页面隐藏底部导航 */
-        val showBottomBar = currentRoute != Screen.Reader.route.substringBefore("/{")
+            val showBottomBar = currentRoute != Screen.Reader.route.substringBefore("/{")
 
-        Scaffold(
-            topBar = {
-                if (showBottomBar) {
-                    AnxTopAppBar(title = currentTitle)
-                }
-            },
-            bottomBar = {
-                if (showBottomBar) {
-                    AnxBottomBar(
-                        items = navItems,
-                        currentRoute = currentRoute,
-                        onItemClick = { route ->
-                            navController.navigate(route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+            Scaffold(
+                topBar = {
+                    if (showBottomBar) {
+                        AnxTopAppBar(title = currentTitle)
+                    }
+                },
+                bottomBar = {
+                    if (showBottomBar) {
+                        AnxBottomBar(
+                            items = navItems,
+                            currentRoute = currentRoute,
+                            onItemClick = { route ->
+                                navController.navigate(route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                    )
+                            },
+                        )
+                    }
+                },
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                ) {
+                    AnxNavGraph(navController = navController)
                 }
-            },
-        ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-            ) {
-                AnxNavGraph(navController = navController)
-            }
             }
         }
 
-        /* 更新提示对话框 */
+        /* 更新提示对话框 — 在 AnxTheme 内部，AnxGradientBackground 外部 */
         if (showUpdateDialog) {
             UpdateDialog(
                 releaseUrl = releaseUrl,
                 onDismiss = { updateViewModel.dismissUpdateDialog() },
                 onGoDownload = { url ->
                     updateViewModel.dismissUpdateDialog()
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                    context.startActivity(intent)
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                 },
             )
-        }
         }
     }
 }
