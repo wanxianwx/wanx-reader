@@ -1,5 +1,7 @@
 package com.wanx.reader
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,9 +26,11 @@ import androidx.navigation.compose.rememberNavController
 import com.wanx.reader.ui.component.AnxBottomBar
 import com.wanx.reader.ui.component.AnxBottomNavItem
 import com.wanx.reader.ui.component.AnxTopAppBar
+import com.wanx.reader.ui.component.UpdateDialog
 import com.wanx.reader.ui.theme.AnxGradientBackground
 import com.wanx.reader.ui.theme.AnxTheme
 import com.wanx.reader.ui.theme.ThemeViewModel
+import com.wanx.reader.ui.UpdateViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -57,6 +61,11 @@ class MainActivity : ComponentActivity() {
 private fun WanxApp() {
     val themeViewModel: ThemeViewModel = hiltViewModel()
     val themeMode by themeViewModel.themeMode.collectAsStateWithLifecycle()
+
+    val updateViewModel: UpdateViewModel = hiltViewModel()
+    val showUpdateDialog by updateViewModel.showUpdateDialog.collectAsStateWithLifecycle()
+    val releaseUrl by updateViewModel.releaseUrl.collectAsStateWithLifecycle()
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     AnxTheme(themeMode = themeMode) {
         /* 全局呼吸感渐变背景 — 包裹所有 Scaffold 和 NavHost */
@@ -112,6 +121,20 @@ private fun WanxApp() {
                 AnxNavGraph(navController = navController)
             }
             }
+        }
+
+        /* 更新提示对话框 */
+        if (showUpdateDialog) {
+            UpdateDialog(
+                releaseUrl = releaseUrl,
+                onDismiss = { updateViewModel.dismissUpdateDialog() },
+                onGoDownload = { url ->
+                    updateViewModel.dismissUpdateDialog()
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    context.startActivity(intent)
+                },
+            )
+        }
         }
     }
 }

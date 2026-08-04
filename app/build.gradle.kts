@@ -83,4 +83,10 @@ dependencies {
 
     /* PullRefresh */
     implementation(libs.accompanist.swiperefresh)
+
+    /* OkHttp 更新检查 */
+    implementation(libs.okhttp)
+
+    /* DataStore 本地偏好 */
+    implementation(libs.datastore.preferences)
 }
