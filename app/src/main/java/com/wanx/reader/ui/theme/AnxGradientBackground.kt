@@ -11,7 +11,6 @@ import androidx.compose.ui.graphics.Color
 
 /**
  * Anx 风格呼吸感渐变背景
- * 静谧柔和，无动画
  */
 @Composable
 fun AnxGradientBackground(content: @Composable () -> Unit) {
@@ -31,20 +30,6 @@ fun AnxGradientBackground(content: @Composable () -> Unit) {
                 ),
             ),
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFFE8F0FE).copy(alpha = 0.15f),
-                            Color(0xFFFCFCFC).copy(alpha = 0.0f),
-                            Color(0xFFF3E7F9).copy(alpha = 0.10f),
-                        ),
-                    ),
-                )
-        ) {
-            content()
-        }
+        content()
     }
 }

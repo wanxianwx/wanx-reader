@@ -22,7 +22,7 @@ import javax.inject.Singleton
 class BookRepository @Inject constructor() {
 
     /* ── 内存模拟数据（后续替换为 Room DAO）── */
-    private val _books = MutableStateFlow(generateMockBooks())
+    private val _books = MutableStateFlow(emptyList<Book>())
 
     /** 获取所有书架书籍的 Flow */
     fun observeBookshelf(): Flow<List<Book>> = _books.asStateFlow()
